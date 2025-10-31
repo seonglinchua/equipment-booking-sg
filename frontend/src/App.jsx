@@ -1,10 +1,16 @@
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import { AuthProvider } from './context/AuthContext';
+import { EquipmentProvider } from './context/EquipmentContext';
+import { BookingProvider } from './context/BookingContext';
 import { useAuth } from './hooks/useAuth';
 import Navbar from './components/Navbar';
 import HomePage from './pages/HomePage';
 import LoginPage from './pages/LoginPage';
 import RegisterPage from './pages/RegisterPage';
+import EquipmentCatalog from './pages/EquipmentCatalog';
+import BookingForm from './pages/BookingForm';
+import MyBookings from './pages/MyBookings';
+import AdminDashboard from './pages/AdminDashboard';
 
 // Protected Route Component
 function ProtectedRoute({ children }) {
@@ -38,18 +44,20 @@ function AppRoutes() {
         <Route path="/login" element={<LoginPage />} />
         <Route path="/register" element={<RegisterPage />} />
 
-        {/* Protected routes will be added here */}
+        {/* Protected routes */}
         <Route
           path="/equipment"
           element={
             <ProtectedRoute>
-              <div className="min-h-screen bg-gray-50 flex items-center justify-center">
-                <div className="text-center">
-                  <div className="text-6xl mb-4">📦</div>
-                  <h1 className="text-2xl font-bold text-gray-900 mb-2">Equipment Catalog</h1>
-                  <p className="text-gray-600">Coming soon...</p>
-                </div>
-              </div>
+              <EquipmentCatalog />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/equipment/:equipmentId/book"
+          element={
+            <ProtectedRoute>
+              <BookingForm />
             </ProtectedRoute>
           }
         />
@@ -57,13 +65,7 @@ function AppRoutes() {
           path="/bookings"
           element={
             <ProtectedRoute>
-              <div className="min-h-screen bg-gray-50 flex items-center justify-center">
-                <div className="text-center">
-                  <div className="text-6xl mb-4">📅</div>
-                  <h1 className="text-2xl font-bold text-gray-900 mb-2">My Bookings</h1>
-                  <p className="text-gray-600">Coming soon...</p>
-                </div>
-              </div>
+              <MyBookings />
             </ProtectedRoute>
           }
         />
@@ -71,13 +73,7 @@ function AppRoutes() {
           path="/admin"
           element={
             <ProtectedRoute>
-              <div className="min-h-screen bg-gray-50 flex items-center justify-center">
-                <div className="text-center">
-                  <div className="text-6xl mb-4">⚙️</div>
-                  <h1 className="text-2xl font-bold text-gray-900 mb-2">Admin Dashboard</h1>
-                  <p className="text-gray-600">Coming soon...</p>
-                </div>
-              </div>
+              <AdminDashboard />
             </ProtectedRoute>
           }
         />
@@ -108,7 +104,11 @@ function App() {
   return (
     <Router>
       <AuthProvider>
-        <AppRoutes />
+        <EquipmentProvider>
+          <BookingProvider>
+            <AppRoutes />
+          </BookingProvider>
+        </EquipmentProvider>
       </AuthProvider>
     </Router>
   );

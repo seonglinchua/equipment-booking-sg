@@ -123,4 +123,147 @@ export const authStorage = {
   },
 };
 
+// Equipment management functions
+export const equipmentStorage = {
+  // Get all equipment
+  getAll: () => {
+    return storage.get(STORAGE_KEYS.EQUIPMENT) || [];
+  },
+
+  // Get equipment by ID
+  getById: (equipmentId) => {
+    const equipment = equipmentStorage.getAll();
+    return equipment.find(item => item.id === equipmentId);
+  },
+
+  // Add new equipment
+  add: (equipmentData) => {
+    const equipment = equipmentStorage.getAll();
+    const newEquipment = {
+      id: Date.now().toString(),
+      ...equipmentData,
+      createdAt: new Date().toISOString(),
+    };
+    equipment.push(newEquipment);
+    storage.set(STORAGE_KEYS.EQUIPMENT, equipment);
+    return newEquipment;
+  },
+
+  // Update equipment
+  update: (equipmentId, updates) => {
+    const equipment = equipmentStorage.getAll();
+    const index = equipment.findIndex(item => item.id === equipmentId);
+    if (index !== -1) {
+      equipment[index] = { ...equipment[index], ...updates, updatedAt: new Date().toISOString() };
+      storage.set(STORAGE_KEYS.EQUIPMENT, equipment);
+      return equipment[index];
+    }
+    return null;
+  },
+
+  // Delete equipment
+  delete: (equipmentId) => {
+    const equipment = equipmentStorage.getAll();
+    const filtered = equipment.filter(item => item.id !== equipmentId);
+    storage.set(STORAGE_KEYS.EQUIPMENT, filtered);
+    return true;
+  },
+
+  // Set all equipment (for initializing mock data)
+  setAll: (equipmentData) => {
+    return storage.set(STORAGE_KEYS.EQUIPMENT, equipmentData);
+  },
+};
+
+// Booking management functions
+export const bookingStorage = {
+  // Get all bookings
+  getAll: () => {
+    return storage.get(STORAGE_KEYS.BOOKINGS) || [];
+  },
+
+  // Get booking by ID
+  getById: (bookingId) => {
+    const bookings = bookingStorage.getAll();
+    return bookings.find(booking => booking.id === bookingId);
+  },
+
+  // Get bookings by user ID
+  getByUserId: (userId) => {
+    const bookings = bookingStorage.getAll();
+    return bookings.filter(booking => booking.userId === userId);
+  },
+
+  // Get bookings by equipment ID
+  getByEquipmentId: (equipmentId) => {
+    const bookings = bookingStorage.getAll();
+    return bookings.filter(booking => booking.equipmentId === equipmentId);
+  },
+
+  // Get bookings by status
+  getByStatus: (status) => {
+    const bookings = bookingStorage.getAll();
+    return bookings.filter(booking => booking.status === status);
+  },
+
+  // Add new booking
+  add: (bookingData) => {
+    const bookings = bookingStorage.getAll();
+    const newBooking = {
+      id: Date.now().toString(),
+      ...bookingData,
+      createdAt: new Date().toISOString(),
+      status: bookingData.status || 'pending',
+    };
+    bookings.push(newBooking);
+    storage.set(STORAGE_KEYS.BOOKINGS, bookings);
+    return newBooking;
+  },
+
+  // Update booking
+  update: (bookingId, updates) => {
+    const bookings = bookingStorage.getAll();
+    const index = bookings.findIndex(booking => booking.id === bookingId);
+    if (index !== -1) {
+      bookings[index] = { ...bookings[index], ...updates, updatedAt: new Date().toISOString() };
+      storage.set(STORAGE_KEYS.BOOKINGS, bookings);
+      return bookings[index];
+    }
+    return null;
+  },
+
+  // Delete booking
+  delete: (bookingId) => {
+    const bookings = bookingStorage.getAll();
+    const filtered = bookings.filter(booking => booking.id !== bookingId);
+    storage.set(STORAGE_KEYS.BOOKINGS, filtered);
+    return true;
+  },
+
+  // Cancel booking (soft delete)
+  cancel: (bookingId) => {
+    return bookingStorage.update(bookingId, { status: 'cancelled' });
+  },
+
+  // Approve booking
+  approve: (bookingId) => {
+    return bookingStorage.update(bookingId, { status: 'approved' });
+  },
+
+  // Reject booking
+  reject: (bookingId, reason = '') => {
+    return bookingStorage.update(bookingId, { status: 'rejected', rejectionReason: reason });
+  },
+
+  // Mark booking as checked out
+  checkout: (bookingId) => {
+    return bookingStorage.update(bookingId, { status: 'active', checkedOutAt: new Date().toISOString() });
+  },
+
+  // Mark booking as returned
+  return: (bookingId) => {
+    return bookingStorage.update(bookingId, { status: 'completed', returnedAt: new Date().toISOString() });
+  },
+};
+
 export { STORAGE_KEYS };
