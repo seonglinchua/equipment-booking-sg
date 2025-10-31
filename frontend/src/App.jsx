@@ -5,6 +5,7 @@ import { BookingProvider } from './context/BookingContext';
 import { NotificationProvider } from './context/NotificationContext';
 import { useAuth } from './hooks/useAuth';
 import Navbar from './components/Navbar';
+import AdminRoute from './components/AdminRoute';
 import NotificationContainer from './components/NotificationContainer';
 import HomePage from './pages/HomePage';
 import LoginPage from './pages/LoginPage';
@@ -15,6 +16,7 @@ import MyBookings from './pages/MyBookings';
 import AdminDashboard from './pages/AdminDashboard';
 import ProfilePage from './pages/ProfilePage';
 import EquipmentManagement from './pages/EquipmentManagement';
+import UserManagement from './pages/UserManagement';
 
 // Protected Route Component
 function ProtectedRoute({ children }) {
@@ -85,17 +87,25 @@ function AppRoutes() {
         <Route
           path="/admin"
           element={
-            <ProtectedRoute>
+            <AdminRoute>
               <AdminDashboard />
-            </ProtectedRoute>
+            </AdminRoute>
           }
         />
         <Route
           path="/admin/equipment"
           element={
-            <ProtectedRoute>
+            <AdminRoute>
               <EquipmentManagement />
-            </ProtectedRoute>
+            </AdminRoute>
+          }
+        />
+        <Route
+          path="/admin/users"
+          element={
+            <AdminRoute>
+              <UserManagement />
+            </AdminRoute>
           }
         />
 

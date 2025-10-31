@@ -60,6 +60,12 @@ export const userStorage = {
     return storage.get(STORAGE_KEYS.USERS) || [];
   },
 
+  // Get user by ID
+  getById: (userId) => {
+    const users = userStorage.getAll();
+    return users.find(user => user.id === userId);
+  },
+
   // Get user by email
   getByEmail: (email) => {
     const users = userStorage.getAll();

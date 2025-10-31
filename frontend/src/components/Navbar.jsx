@@ -50,6 +50,12 @@ export default function Navbar() {
                 >
                   My Bookings
                 </Link>
+                <Link
+                  to="/profile"
+                  className="text-gray-700 hover:text-blue-600 font-medium transition-colors"
+                >
+                  Profile
+                </Link>
                 {user?.role === 'admin' && (
                   <>
                     <Link
@@ -63,6 +69,12 @@ export default function Navbar() {
                       className="text-gray-700 hover:text-blue-600 font-medium transition-colors"
                     >
                       Equipment Mgmt
+                    </Link>
+                    <Link
+                      to="/admin/users"
+                      className="text-gray-700 hover:text-blue-600 font-medium transition-colors"
+                    >
+                      User Mgmt
                     </Link>
                   </>
                 )}
@@ -163,6 +175,13 @@ export default function Navbar() {
                 >
                   My Bookings
                 </Link>
+                <Link
+                  to="/profile"
+                  onClick={() => setIsMenuOpen(false)}
+                  className="px-4 py-2 text-gray-700 hover:bg-gray-50 rounded-lg font-medium transition-colors"
+                >
+                  Profile
+                </Link>
                 {user?.role === 'admin' && (
                   <>
                     <Link
@@ -178,6 +197,13 @@ export default function Navbar() {
                       className="px-4 py-2 text-gray-700 hover:bg-gray-50 rounded-lg font-medium transition-colors"
                     >
                       Equipment Management
+                    </Link>
+                    <Link
+                      to="/admin/users"
+                      onClick={() => setIsMenuOpen(false)}
+                      className="px-4 py-2 text-gray-700 hover:bg-gray-50 rounded-lg font-medium transition-colors"
+                    >
+                      User Management
                     </Link>
                   </>
                 )}
