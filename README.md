@@ -27,6 +27,7 @@ A web-based equipment booking system for Singapore education institutions, built
 - [Mock Data](#mock-data)
 - [Implementation Style Guide](#implementation-style-guide)
 - [Getting Started](#getting-started)
+- [Deployment](#deployment)
 - [Project Structure](#project-structure)
 - [Testing Your Work](#testing-your-work)
 - [Development Workflow](#development-workflow)
@@ -171,6 +172,90 @@ npm run dev
 
 # Open browser to http://localhost:5173
 ```
+
+---
+
+## 🚀 Deployment
+
+This project is configured to automatically deploy to GitHub Pages whenever changes are pushed to the `main` branch.
+
+### Automatic Deployment (Recommended)
+
+The repository includes a GitHub Actions workflow that automatically builds and deploys the application to GitHub Pages.
+
+**Setup Steps:**
+
+1. **Enable GitHub Pages**
+   - Go to your repository on GitHub
+   - Navigate to Settings → Pages
+   - Under "Build and deployment", set Source to "GitHub Actions"
+
+2. **Push to main branch**
+   ```bash
+   git push origin main
+   ```
+
+3. **Monitor deployment**
+   - Go to the "Actions" tab in your GitHub repository
+   - Watch the "Deploy to GitHub Pages" workflow run
+   - Once complete, your site will be live at: `https://yourusername.github.io/equipment-booking-sg/`
+
+### Manual Deployment
+
+If you prefer to deploy manually:
+
+```bash
+# Navigate to frontend directory
+cd frontend
+
+# Install dependencies (if not already done)
+npm install
+
+# Build the project
+npm run build
+
+# The built files will be in frontend/dist/
+# You can deploy these files to any static hosting service
+```
+
+### Environment Configuration
+
+The application is configured for GitHub Pages deployment with:
+- **Base path**: `/equipment-booking-sg/` (configured in `vite.config.js`)
+- **Build output**: `frontend/dist/`
+- **Node version**: 18 (configured in GitHub Actions)
+
+### Deployment Workflow
+
+The GitHub Actions workflow (`.github/workflows/deploy.yml`) performs these steps:
+
+1. Checks out the code
+2. Sets up Node.js 18
+3. Installs dependencies with `npm ci`
+4. Builds the project with `npm run build`
+5. Uploads the build artifacts
+6. Deploys to GitHub Pages
+
+### Viewing Your Deployed Site
+
+After successful deployment:
+- **Production URL**: `https://yourusername.github.io/equipment-booking-sg/`
+- **Deployment logs**: Available in the "Actions" tab of your repository
+
+### Troubleshooting Deployment
+
+**Build fails:**
+- Check that all dependencies are listed in `package.json`
+- Ensure there are no ESLint errors (or adjust the build script)
+- Review the Actions log for specific error messages
+
+**404 errors after deployment:**
+- Verify the `base` path in `vite.config.js` matches your repository name
+- Ensure GitHub Pages is enabled and set to "GitHub Actions"
+
+**Routing issues:**
+- React Router is configured with `basename="/equipment-booking-sg"`
+- This matches the GitHub Pages subdirectory
 
 ---
 
