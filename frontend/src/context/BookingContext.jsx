@@ -73,7 +73,8 @@ export function BookingProvider({ children }) {
     const overlappingBookings = bookings.filter(booking => {
       if (booking.equipmentId !== equipmentId) return false;
       if (booking.id === excludeBookingId) return false; // Exclude current booking when editing
-      if (booking.status === 'cancelled' || booking.status === 'rejected') return false;
+      // Only consider bookings that actually occupy equipment (exclude cancelled, rejected, and completed)
+      if (booking.status === 'cancelled' || booking.status === 'rejected' || booking.status === 'completed') return false;
 
       return dateRangesOverlap(startDate, endDate, booking.startDate, booking.endDate);
     });
