@@ -2,8 +2,10 @@ import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-d
 import { AuthProvider } from './context/AuthContext';
 import { EquipmentProvider } from './context/EquipmentContext';
 import { BookingProvider } from './context/BookingContext';
+import { NotificationProvider } from './context/NotificationContext';
 import { useAuth } from './hooks/useAuth';
 import Navbar from './components/Navbar';
+import NotificationContainer from './components/NotificationContainer';
 import HomePage from './pages/HomePage';
 import LoginPage from './pages/LoginPage';
 import RegisterPage from './pages/RegisterPage';
@@ -11,6 +13,8 @@ import EquipmentCatalog from './pages/EquipmentCatalog';
 import BookingForm from './pages/BookingForm';
 import MyBookings from './pages/MyBookings';
 import AdminDashboard from './pages/AdminDashboard';
+import ProfilePage from './pages/ProfilePage';
+import EquipmentManagement from './pages/EquipmentManagement';
 
 // Protected Route Component
 function ProtectedRoute({ children }) {
@@ -39,6 +43,7 @@ function AppRoutes() {
   return (
     <>
       <Navbar />
+      <NotificationContainer />
       <Routes>
         <Route path="/" element={<HomePage />} />
         <Route path="/login" element={<LoginPage />} />
@@ -70,10 +75,26 @@ function AppRoutes() {
           }
         />
         <Route
+          path="/profile"
+          element={
+            <ProtectedRoute>
+              <ProfilePage />
+            </ProtectedRoute>
+          }
+        />
+        <Route
           path="/admin"
           element={
             <ProtectedRoute>
               <AdminDashboard />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/admin/equipment"
+          element={
+            <ProtectedRoute>
+              <EquipmentManagement />
             </ProtectedRoute>
           }
         />
@@ -103,13 +124,15 @@ function AppRoutes() {
 function App() {
   return (
     <Router>
-      <AuthProvider>
-        <EquipmentProvider>
-          <BookingProvider>
-            <AppRoutes />
-          </BookingProvider>
-        </EquipmentProvider>
-      </AuthProvider>
+      <NotificationProvider>
+        <AuthProvider>
+          <EquipmentProvider>
+            <BookingProvider>
+              <AppRoutes />
+            </BookingProvider>
+          </EquipmentProvider>
+        </AuthProvider>
+      </NotificationProvider>
     </Router>
   );
 }
