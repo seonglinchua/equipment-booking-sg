@@ -150,6 +150,50 @@ export function AuthProvider({ children }) {
     }
   };
 
+  // Update user (alias for updateProfile for consistency)
+  const updateUser = async (userData) => {
+    return updateProfile(userData);
+  };
+
+  // Change password
+  const changePassword = async (currentPassword, newPassword) => {
+    setIsLoading(true);
+    setError(null);
+
+    try {
+      if (!user) {
+        throw new Error('No user logged in');
+      }
+
+      // Get full user data with password
+      const fullUser = userStorage.getById(user.id);
+      if (!fullUser) {
+        throw new Error('User not found');
+      }
+
+      // Verify current password
+      if (!verifyPassword(currentPassword, fullUser.password)) {
+        throw new Error('Current password is incorrect');
+      }
+
+      // Update password
+      const updatedUser = userStorage.update(user.id, {
+        password: hashPassword(newPassword),
+      });
+
+      if (!updatedUser) {
+        throw new Error('Failed to update password');
+      }
+
+      setIsLoading(false);
+      return { success: true };
+    } catch (err) {
+      setError(err.message);
+      setIsLoading(false);
+      return { success: false, error: err.message };
+    }
+  };
+
   // Check if user has specific role
   const hasRole = (roleToCheck) => {
     return user?.role === roleToCheck;
@@ -178,6 +222,8 @@ export function AuthProvider({ children }) {
     login,
     logout,
     updateProfile,
+    updateUser,
+    changePassword,
     hasRole,
     isAdmin,
     isTeacher,

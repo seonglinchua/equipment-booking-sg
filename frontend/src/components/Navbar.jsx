@@ -51,12 +51,20 @@ export default function Navbar() {
                   My Bookings
                 </Link>
                 {user?.role === 'admin' && (
-                  <Link
-                    to="/admin"
-                    className="text-gray-700 hover:text-blue-600 font-medium transition-colors"
-                  >
-                    Admin
-                  </Link>
+                  <>
+                    <Link
+                      to="/admin"
+                      className="text-gray-700 hover:text-blue-600 font-medium transition-colors"
+                    >
+                      Admin
+                    </Link>
+                    <Link
+                      to="/admin/equipment"
+                      className="text-gray-700 hover:text-blue-600 font-medium transition-colors"
+                    >
+                      Equipment Mgmt
+                    </Link>
+                  </>
                 )}
 
                 {/* User Menu */}
@@ -156,13 +164,22 @@ export default function Navbar() {
                   My Bookings
                 </Link>
                 {user?.role === 'admin' && (
-                  <Link
-                    to="/admin"
-                    onClick={() => setIsMenuOpen(false)}
-                    className="px-4 py-2 text-gray-700 hover:bg-gray-50 rounded-lg font-medium transition-colors"
-                  >
-                    Admin Dashboard
-                  </Link>
+                  <>
+                    <Link
+                      to="/admin"
+                      onClick={() => setIsMenuOpen(false)}
+                      className="px-4 py-2 text-gray-700 hover:bg-gray-50 rounded-lg font-medium transition-colors"
+                    >
+                      Admin Dashboard
+                    </Link>
+                    <Link
+                      to="/admin/equipment"
+                      onClick={() => setIsMenuOpen(false)}
+                      className="px-4 py-2 text-gray-700 hover:bg-gray-50 rounded-lg font-medium transition-colors"
+                    >
+                      Equipment Management
+                    </Link>
+                  </>
                 )}
 
                 {/* Logout Button */}

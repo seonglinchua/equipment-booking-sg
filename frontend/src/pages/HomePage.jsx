@@ -1,8 +1,18 @@
 import { Link } from 'react-router-dom';
 import { useAuth } from '../hooks/useAuth';
+import { useEquipment } from '../hooks/useEquipment';
+import { useBooking } from '../hooks/useBooking';
 
 export default function HomePage() {
   const { user, isAuthenticated } = useAuth();
+  const { equipment } = useEquipment();
+  const { getUserBookings } = useBooking();
+
+  // Calculate real statistics
+  const availableEquipmentCount = equipment.filter(item => item.quantity > 0).length;
+  const userBookings = isAuthenticated ? getUserBookings(user?.id) : [];
+  const activeBookingsCount = userBookings.filter(b => ['pending', 'approved', 'active'].includes(b.status)).length;
+  const completedBookingsCount = userBookings.filter(b => b.status === 'completed').length;
 
   if (!isAuthenticated) {
     return (
@@ -125,7 +135,7 @@ export default function HomePage() {
               <div className="text-4xl">📦</div>
               <div>
                 <p className="text-sm font-medium text-gray-600 mb-1">Available Equipment</p>
-                <p className="text-3xl font-bold text-gray-900">12</p>
+                <p className="text-3xl font-bold text-gray-900">{availableEquipmentCount}</p>
               </div>
             </div>
           </div>
@@ -135,7 +145,7 @@ export default function HomePage() {
               <div className="text-4xl">📅</div>
               <div>
                 <p className="text-sm font-medium text-gray-600 mb-1">My Bookings</p>
-                <p className="text-3xl font-bold text-gray-900">0</p>
+                <p className="text-3xl font-bold text-gray-900">{activeBookingsCount}</p>
               </div>
             </div>
           </div>
@@ -145,7 +155,7 @@ export default function HomePage() {
               <div className="text-4xl">✓</div>
               <div>
                 <p className="text-sm font-medium text-gray-600 mb-1">Completed</p>
-                <p className="text-3xl font-bold text-gray-900">0</p>
+                <p className="text-3xl font-bold text-gray-900">{completedBookingsCount}</p>
               </div>
             </div>
           </div>
@@ -181,10 +191,13 @@ export default function HomePage() {
               </Link>
             )}
 
-            <div className="flex flex-col items-center p-6 bg-gray-50 hover:bg-gray-100 rounded-lg transition-colors cursor-pointer">
+            <Link
+              to="/profile"
+              className="flex flex-col items-center p-6 bg-gray-50 hover:bg-gray-100 rounded-lg transition-colors"
+            >
               <div className="text-3xl mb-2">👤</div>
               <p className="text-sm font-semibold text-gray-900">My Profile</p>
-            </div>
+            </Link>
           </div>
         </div>
 
