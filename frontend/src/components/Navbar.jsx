@@ -32,51 +32,65 @@ export default function Navbar() {
           <div className="hidden md:flex items-center gap-6">
             {isAuthenticated ? (
               <>
+                {/* Main Navigation */}
                 <Link
                   to="/"
                   className="text-gray-700 hover:text-blue-600 font-medium transition-colors"
                 >
                   Home
                 </Link>
-                <Link
-                  to="/equipment"
-                  className="text-gray-700 hover:text-blue-600 font-medium transition-colors"
-                >
-                  Equipment
-                </Link>
-                <Link
-                  to="/bookings"
-                  className="text-gray-700 hover:text-blue-600 font-medium transition-colors"
-                >
-                  My Bookings
-                </Link>
-                <Link
-                  to="/profile"
-                  className="text-gray-700 hover:text-blue-600 font-medium transition-colors"
-                >
-                  Profile
-                </Link>
+
+                {/* Bookings Section */}
+                <div className="flex items-center gap-4 px-4 border-l border-gray-200">
+                  <span className="text-xs font-semibold text-gray-400 uppercase tracking-wider">Bookings</span>
+                  <Link
+                    to="/equipment"
+                    className="text-gray-700 hover:text-blue-600 font-medium transition-colors"
+                  >
+                    Equipment
+                  </Link>
+                  <Link
+                    to="/bookings"
+                    className="text-gray-700 hover:text-blue-600 font-medium transition-colors"
+                  >
+                    My Bookings
+                  </Link>
+                </div>
+
+                {/* Account Section */}
+                <div className="flex items-center gap-4 px-4 border-l border-gray-200">
+                  <span className="text-xs font-semibold text-gray-400 uppercase tracking-wider">Account</span>
+                  <Link
+                    to="/profile"
+                    className="text-gray-700 hover:text-blue-600 font-medium transition-colors"
+                  >
+                    Profile
+                  </Link>
+                </div>
+
+                {/* Admin Section */}
                 {user?.role === 'admin' && (
-                  <>
+                  <div className="flex items-center gap-4 px-4 border-l border-gray-200">
+                    <span className="text-xs font-semibold text-gray-400 uppercase tracking-wider">Admin</span>
                     <Link
                       to="/admin"
                       className="text-gray-700 hover:text-blue-600 font-medium transition-colors"
                     >
-                      Admin
+                      Dashboard
                     </Link>
                     <Link
                       to="/admin/equipment"
                       className="text-gray-700 hover:text-blue-600 font-medium transition-colors"
                     >
-                      Equipment Mgmt
+                      Equipment
                     </Link>
                     <Link
                       to="/admin/users"
                       className="text-gray-700 hover:text-blue-600 font-medium transition-colors"
                     >
-                      User Mgmt
+                      Users
                     </Link>
-                  </>
+                  </div>
                 )}
 
                 {/* User Menu */}
@@ -153,7 +167,7 @@ export default function Navbar() {
                   <p className="text-xs text-blue-600 capitalize mt-1">{user?.role}</p>
                 </div>
 
-                {/* Navigation Links */}
+                {/* Main Navigation */}
                 <Link
                   to="/"
                   onClick={() => setIsMenuOpen(false)}
@@ -161,6 +175,11 @@ export default function Navbar() {
                 >
                   Home
                 </Link>
+
+                {/* Bookings Section */}
+                <div className="px-4 pt-3 pb-1">
+                  <p className="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-2">Bookings</p>
+                </div>
                 <Link
                   to="/equipment"
                   onClick={() => setIsMenuOpen(false)}
@@ -175,6 +194,11 @@ export default function Navbar() {
                 >
                   My Bookings
                 </Link>
+
+                {/* Account Section */}
+                <div className="px-4 pt-3 pb-1">
+                  <p className="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-2">Account</p>
+                </div>
                 <Link
                   to="/profile"
                   onClick={() => setIsMenuOpen(false)}
@@ -182,14 +206,19 @@ export default function Navbar() {
                 >
                   Profile
                 </Link>
+
+                {/* Admin Section */}
                 {user?.role === 'admin' && (
                   <>
+                    <div className="px-4 pt-3 pb-1">
+                      <p className="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-2">Admin</p>
+                    </div>
                     <Link
                       to="/admin"
                       onClick={() => setIsMenuOpen(false)}
                       className="px-4 py-2 text-gray-700 hover:bg-gray-50 rounded-lg font-medium transition-colors"
                     >
-                      Admin Dashboard
+                      Dashboard
                     </Link>
                     <Link
                       to="/admin/equipment"
@@ -211,7 +240,7 @@ export default function Navbar() {
                 {/* Logout Button */}
                 <button
                   onClick={handleLogout}
-                  className="mx-4 mt-2 bg-gray-200 hover:bg-gray-300 text-gray-900 px-4 py-2 rounded-lg font-medium transition-colors"
+                  className="mx-4 mt-4 bg-gray-200 hover:bg-gray-300 text-gray-900 px-4 py-2 rounded-lg font-medium transition-colors"
                 >
                   Logout
                 </button>
