@@ -214,6 +214,125 @@ export function AuthProvider({ children }) {
     return user?.role === 'student';
   };
 
+  // Admin function: Get all users
+  const getAllUsers = () => {
+    if (!isAdmin()) {
+      throw new Error('Unauthorized: Admin access required');
+    }
+    return userStorage.getAll().map(({ password, ...user }) => user);
+  };
+
+  // Admin function: Update user role
+  const updateUserRole = async (userId, newRole) => {
+    setIsLoading(true);
+    setError(null);
+
+    try {
+      if (!isAdmin()) {
+        throw new Error('Unauthorized: Admin access required');
+      }
+
+      if (!userId || !newRole) {
+        throw new Error('User ID and role are required');
+      }
+
+      if (!['student', 'teacher', 'admin'].includes(newRole)) {
+        throw new Error('Invalid role. Must be student, teacher, or admin');
+      }
+
+      // Don't allow admin to change their own role
+      if (userId === user?.id) {
+        throw new Error('Cannot change your own role');
+      }
+
+      const updatedUser = userStorage.update(userId, { role: newRole });
+      if (!updatedUser) {
+        throw new Error('User not found');
+      }
+
+      setIsLoading(false);
+      return { success: true, user: updatedUser };
+    } catch (err) {
+      setError(err.message);
+      setIsLoading(false);
+      return { success: false, error: err.message };
+    }
+  };
+
+  // Admin function: Update any user
+  const updateAnyUser = async (userId, updates) => {
+    setIsLoading(true);
+    setError(null);
+
+    try {
+      if (!isAdmin()) {
+        throw new Error('Unauthorized: Admin access required');
+      }
+
+      if (!userId) {
+        throw new Error('User ID is required');
+      }
+
+      // Don't allow role updates through this function
+      if (updates.role) {
+        throw new Error('Use updateUserRole to change user roles');
+      }
+
+      // Don't allow password updates through this function
+      if (updates.password) {
+        throw new Error('Cannot update passwords directly');
+      }
+
+      const updatedUser = userStorage.update(userId, updates);
+      if (!updatedUser) {
+        throw new Error('User not found');
+      }
+
+      // Remove password from response
+      const { password: _, ...userWithoutPassword } = updatedUser;
+
+      setIsLoading(false);
+      return { success: true, user: userWithoutPassword };
+    } catch (err) {
+      setError(err.message);
+      setIsLoading(false);
+      return { success: false, error: err.message };
+    }
+  };
+
+  // Admin function: Delete user
+  const deleteUser = async (userId) => {
+    setIsLoading(true);
+    setError(null);
+
+    try {
+      if (!isAdmin()) {
+        throw new Error('Unauthorized: Admin access required');
+      }
+
+      if (!userId) {
+        throw new Error('User ID is required');
+      }
+
+      // Don't allow admin to delete themselves
+      if (userId === user?.id) {
+        throw new Error('Cannot delete your own account');
+      }
+
+      const success = userStorage.delete(userId);
+      if (!success) {
+        throw new Error('Failed to delete user');
+      }
+
+      setIsLoading(false);
+      return { success: true };
+    } catch (err) {
+      setError(err.message);
+      setIsLoading(false);
+      return { success: false, error: err.message };
+    }
+  };
+
   const value = {
     user,
     isLoading,
@@ -229,6 +348,11 @@ export function AuthProvider({ children }) {
     isTeacher,
     isStudent,
     isAuthenticated: !!user,
+    // Admin functions
+    getAllUsers,
+    updateUserRole,
+    updateAnyUser,
+    deleteUser,
   };
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
