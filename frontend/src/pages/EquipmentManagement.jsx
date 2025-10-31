@@ -1,6 +1,7 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useAuth } from '../hooks/useAuth';
 import { useEquipment } from '../hooks/useEquipment';
+import { useBooking } from '../hooks/useBooking';
 import Card from '../components/common/Card';
 import Button from '../components/common/Button';
 import Input from '../components/common/Input';
@@ -30,6 +31,7 @@ const CONDITIONS = [
 export default function EquipmentManagement() {
   const { user } = useAuth();
   const { equipment, addEquipment, updateEquipment, deleteEquipment } = useEquipment();
+  const { getEquipmentBookings } = useBooking();
   const [showAddModal, setShowAddModal] = useState(false);
   const [showEditModal, setShowEditModal] = useState(false);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
@@ -38,6 +40,7 @@ export default function EquipmentManagement() {
   const [errorMessage, setErrorMessage] = useState('');
   const [searchTerm, setSearchTerm] = useState('');
   const [filterCategory, setFilterCategory] = useState('');
+  const [deleteWarning, setDeleteWarning] = useState('');
 
   // Form state
   const [formData, setFormData] = useState({
@@ -78,6 +81,21 @@ export default function EquipmentManagement() {
     );
   }
 
+  // Auto-dismiss messages after 5 seconds
+  useEffect(() => {
+    if (successMessage) {
+      const timer = setTimeout(() => setSuccessMessage(''), 5000);
+      return () => clearTimeout(timer);
+    }
+  }, [successMessage]);
+
+  useEffect(() => {
+    if (errorMessage) {
+      const timer = setTimeout(() => setErrorMessage(''), 5000);
+      return () => clearTimeout(timer);
+    }
+  }, [errorMessage]);
+
   // Filter equipment
   const filteredEquipment = equipment.filter((item) => {
     const matchesSearch =
@@ -86,6 +104,14 @@ export default function EquipmentManagement() {
     const matchesCategory = !filterCategory || item.category === filterCategory;
     return matchesSearch && matchesCategory;
   });
+
+  // Get active bookings count for equipment
+  const getActiveBookingsCount = (equipmentId) => {
+    const bookings = getEquipmentBookings(equipmentId);
+    return bookings.filter(b =>
+      b.status === 'pending' || b.status === 'approved' || b.status === 'active'
+    ).length;
+  };
 
   const resetForm = () => {
     setFormData({
@@ -122,6 +148,21 @@ export default function EquipmentManagement() {
 
   const handleDeleteClick = (item) => {
     setSelectedEquipment(item);
+
+    // Check for active bookings
+    const bookings = getEquipmentBookings(item.id);
+    const activeBookings = bookings.filter(b =>
+      b.status === 'pending' || b.status === 'approved' || b.status === 'active'
+    );
+
+    if (activeBookings.length > 0) {
+      setDeleteWarning(
+        `Warning: This equipment has ${activeBookings.length} active booking(s). Deleting it may cause issues with existing bookings.`
+      );
+    } else {
+      setDeleteWarning('');
+    }
+
     setShowDeleteModal(true);
   };
 
@@ -381,6 +422,15 @@ export default function EquipmentManagement() {
                       <span className="text-gray-500">Condition:</span>
                       <p className="font-medium text-gray-900">{item.condition || 'Good'}</p>
                     </div>
+                    <div className="col-span-2">
+                      <span className="text-gray-500">Active Bookings:</span>
+                      <p className="font-medium text-gray-900">
+                        {getActiveBookingsCount(item.id)}
+                        {getActiveBookingsCount(item.id) > 0 && (
+                          <Badge variant="warning" className="ml-2">Active</Badge>
+                        )}
+                      </p>
+                    </div>
                   </div>
 
                   <div className="flex gap-2 pt-3">
@@ -634,6 +684,7 @@ export default function EquipmentManagement() {
           onClose={() => {
             setShowDeleteModal(false);
             setSelectedEquipment(null);
+            setDeleteWarning('');
           }}
           title="Delete Equipment"
           size="sm"
@@ -644,7 +695,11 @@ export default function EquipmentManagement() {
               <div className="bg-gray-50 p-4 rounded-lg">
                 <p className="font-medium text-gray-900 mb-1">{selectedEquipment.name}</p>
                 <p className="text-sm text-gray-600">Category: {selectedEquipment.category}</p>
+                <p className="text-sm text-gray-600">Active Bookings: {getActiveBookingsCount(selectedEquipment.id)}</p>
               </div>
+            )}
+            {deleteWarning && (
+              <Alert type="warning" message={deleteWarning} className="mt-4" />
             )}
             <Alert type="warning" message="This action cannot be undone." className="mt-4" />
           </div>
@@ -655,13 +710,14 @@ export default function EquipmentManagement() {
               onClick={() => {
                 setShowDeleteModal(false);
                 setSelectedEquipment(null);
+                setDeleteWarning('');
               }}
               className="flex-1"
             >
               Cancel
             </Button>
             <Button variant="danger" onClick={handleDeleteConfirm} className="flex-1">
-              Delete
+              {deleteWarning ? 'Delete Anyway' : 'Delete'}
             </Button>
           </div>
         </Modal>

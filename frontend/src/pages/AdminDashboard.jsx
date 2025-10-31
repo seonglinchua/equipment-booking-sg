@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useAuth } from '../hooks/useAuth';
 import { useBooking } from '../hooks/useBooking';
 import { formatDateReadable, getStatusColor, getStatusText } from '../utils/dateHelpers';
@@ -30,6 +30,7 @@ export default function AdminDashboard() {
   const [successMessage, setSuccessMessage] = useState('');
   const [errorMessage, setErrorMessage] = useState('');
   const [activeTab, setActiveTab] = useState('pending');
+  const [searchTerm, setSearchTerm] = useState('');
 
   // Check if user is admin
   if (user?.role !== 'admin') {
@@ -62,6 +63,23 @@ export default function AdminDashboard() {
   const pendingBookings = getPendingBookings();
   const activeBookings = getActiveBookings();
   const approvedBookings = allBookings.filter(b => b.status === 'approved');
+  const completedBookings = allBookings.filter(b => b.status === 'completed');
+  const rejectedBookings = allBookings.filter(b => b.status === 'rejected');
+
+  // Auto-dismiss messages after 5 seconds
+  useEffect(() => {
+    if (successMessage) {
+      const timer = setTimeout(() => setSuccessMessage(''), 5000);
+      return () => clearTimeout(timer);
+    }
+  }, [successMessage]);
+
+  useEffect(() => {
+    if (errorMessage) {
+      const timer = setTimeout(() => setErrorMessage(''), 5000);
+      return () => clearTimeout(timer);
+    }
+  }, [errorMessage]);
 
   // Get bookings for active tab
   const getTabBookings = () => {
@@ -72,6 +90,10 @@ export default function AdminDashboard() {
         return approvedBookings;
       case 'active':
         return activeBookings;
+      case 'completed':
+        return completedBookings;
+      case 'rejected':
+        return rejectedBookings;
       case 'all':
         return allBookings;
       default:
@@ -79,7 +101,20 @@ export default function AdminDashboard() {
     }
   };
 
-  const tabBookings = getTabBookings().sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+  // Filter bookings by search term
+  const filterBookings = (bookings) => {
+    if (!searchTerm.trim()) return bookings;
+
+    const term = searchTerm.toLowerCase();
+    return bookings.filter(booking =>
+      booking.equipmentName.toLowerCase().includes(term) ||
+      booking.userName.toLowerCase().includes(term) ||
+      booking.userEmail.toLowerCase().includes(term) ||
+      booking.purpose?.toLowerCase().includes(term)
+    );
+  };
+
+  const tabBookings = filterBookings(getTabBookings()).sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
 
   const handleApprove = async (bookingId) => {
     setSuccessMessage('');
@@ -228,13 +263,26 @@ export default function AdminDashboard() {
           </Card>
         </div>
 
+        {/* Search Bar */}
+        <Card className="mb-6">
+          <Input
+            type="text"
+            placeholder="Search bookings by equipment, user, email, or purpose..."
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+            className="w-full"
+          />
+        </Card>
+
         {/* Tabs */}
         <div className="mb-6 flex flex-wrap gap-2">
           {[
-            { value: 'pending', label: `Pending (${pendingBookings.length})` },
-            { value: 'approved', label: `Approved (${approvedBookings.length})` },
-            { value: 'active', label: `Active (${activeBookings.length})` },
-            { value: 'all', label: 'All Bookings' },
+            { value: 'pending', label: `Pending (${pendingBookings.length})`, color: 'yellow' },
+            { value: 'approved', label: `Approved (${approvedBookings.length})`, color: 'green' },
+            { value: 'active', label: `Active (${activeBookings.length})`, color: 'blue' },
+            { value: 'completed', label: `Completed (${completedBookings.length})`, color: 'gray' },
+            { value: 'rejected', label: `Rejected (${rejectedBookings.length})`, color: 'red' },
+            { value: 'all', label: 'All Bookings', color: 'default' },
           ].map((tab) => (
             <Button
               key={tab.value}
