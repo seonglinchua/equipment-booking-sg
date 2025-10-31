@@ -4,7 +4,7 @@ import { EquipmentProvider } from './context/EquipmentContext';
 import { BookingProvider } from './context/BookingContext';
 import { NotificationProvider } from './context/NotificationContext';
 import { useAuth } from './hooks/useAuth';
-import Navbar from './components/Navbar';
+import Layout from './components/Layout';
 import AdminRoute from './components/AdminRoute';
 import NotificationContainer from './components/NotificationContainer';
 import HomePage from './pages/HomePage';
@@ -43,8 +43,7 @@ function ProtectedRoute({ children }) {
 // App Routes Component (needs to be inside AuthProvider)
 function AppRoutes() {
   return (
-    <>
-      <Navbar />
+    <Layout>
       <NotificationContainer />
       <Routes>
         <Route path="/" element={<HomePage />} />
@@ -126,7 +125,7 @@ function AppRoutes() {
           }
         />
       </Routes>
-    </>
+    </Layout>
   );
 }
 
